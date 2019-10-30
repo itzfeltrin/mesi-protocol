@@ -9,20 +9,27 @@ package application;
  *
  * @author Administrador
  */
-public class Cache implements Runnable {    
+public class Cache implements Runnable {
+    public Memoria MP;
     public int valores[] = new int[3];
     public char tags[] = new char[3];
     
-    public Cache() {        
+    public Cache(Memoria mem) {        
+        this.MP = mem;
     }
     
     public void setValue(int valor, int ind) {
         this.valores[ind] = valor;
-        this.tags[ind] = 'M';        
+        this.tags[ind] = 'M';
+        for(Cache obj : this.MP.caches) {
+            if(!obj.equals(this)) {
+                if(obj.valores[ind] != valor) obj.tags[ind] = 'I';
+            }
+        }
     }
     
     public void printValues() {
-        System.out.println(Thread.currentThread().getName());
+        System.out.println("");
         for(int i = 0; i < 3; i++) {
             System.out.println("Valor: " + this.valores[i] + " Índice: " + this.tags[i]);
         }

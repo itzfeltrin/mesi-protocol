@@ -16,8 +16,8 @@ public class Memoria {
     public Cache[] caches = new Cache[3];
     
     public Memoria() {
-        for(Cache obj : this.caches) {
-            obj = new Cache();
+        for(int i = 0; i < this.caches.length; i++) {
+            this.caches[i] = new Cache(this);
         }
     }
     
@@ -33,6 +33,12 @@ public class Memoria {
         Random x = new Random();
         for(int i = 0; i < 3; i++) {
             this.valores[i] = x.nextInt(9) + 1;
+        }
+        for(Cache obj : this.caches) {
+            for(int i = 0; i < 3; i++) {
+                obj.valores[i] = this.valores[i];
+                obj.tags[i] = 'S';
+            }
         }
     }
     
