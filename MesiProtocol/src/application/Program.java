@@ -6,6 +6,8 @@
 package application;
 
 import java.util.Random;
+import java.util.Scanner;
+import screen.MainScreen;
 
 /**
  *
@@ -34,18 +36,24 @@ public class Program {
             pc2.start();
             pc3.start();       
 
+            MP.printValues();
+            
             System.out.print("Estado inicial");
             for(Cache obj : MP.caches) {
                 obj.printValues();
             }
-            
+            Scanner sc = new Scanner(System.in);
             for(int i = 0; i < 5; i++) {
                 System.out.print("\nEstágio " + i);
+                int cache = random.nextInt(3);
                 int ind = random.nextInt(3);
-                MP.caches[ind].setValue(random.nextInt(20) + 1, ind);
+                int valor = random.nextInt(20) + 1;
+                System.out.println("\nCache: " + cache + " - Endereço: " + ind + " - Valor: " + valor);
+                MP.caches[cache].setValue(valor, ind);
                 for(Cache obj : MP.caches) {
-                    obj.printValues();
+                    obj.printValues();                    
                 }
+                sc.next();
             }
         }
         catch(Exception ex) {

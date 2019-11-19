@@ -20,7 +20,26 @@ public class Cache implements Runnable {
     
     public void setValue(int valor, int ind) {
         this.valores[ind] = valor;
-        this.tags[ind] = 'M';
+        if(this.tags[ind] == 'S') {
+            this.MP.valores[ind] = valor;
+            this.tags[ind] = 'E';
+        }
+        else if(this.tags[ind] == 'E') {
+            this.tags[ind] =  'M';
+        }
+        else if(this.tags[ind] == 'I') {
+            for(Cache obj : this.MP.caches) {
+                if(!obj.equals(this)) {
+                    if(obj.tags[ind] == 'E' || obj.tags[ind] == 'M') {
+                        this.MP.valores[ind] = valor;
+                        this.valores[ind] = this.MP.valores[ind];
+                        obj.tags[ind] = 'I';
+                        this.tags[ind] = 'E';
+                        break;                        
+                    }
+                }
+            }
+        }
         for(Cache obj : this.MP.caches) {
             if(!obj.equals(this)) {
                 if(obj.valores[ind] != valor) obj.tags[ind] = 'I';
@@ -31,7 +50,7 @@ public class Cache implements Runnable {
     public void printValues() {
         System.out.println("");
         for(int i = 0; i < 3; i++) {
-            System.out.println("Valor: " + this.valores[i] + " Índice: " + this.tags[i]);
+            System.out.println("Valor: " + this.valores[i] + " Tag: " + this.tags[i]);
         }
     }
     

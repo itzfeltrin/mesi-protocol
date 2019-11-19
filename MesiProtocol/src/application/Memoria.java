@@ -42,4 +42,12 @@ public class Memoria {
         }
     }
     
+    public void printValues(){
+        System.out.println("Memória Principal!");
+        for(int obj : this.valores) {
+            System.out.println(obj);
+        }
+        System.out.println();
+    }
+    
 }
