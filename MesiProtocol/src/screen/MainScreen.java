@@ -5,7 +5,12 @@
  */
 package screen;
 
+import application.Memoria;
 import application.Program;
+import java.util.ArrayList;
+import java.util.Random;
+import javax.swing.JTable;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
@@ -14,9 +19,81 @@ import application.Program;
 public class MainScreen extends javax.swing.JFrame {
 
     public Program program;
+    public Memoria memoria;
     
     public MainScreen() {
         initComponents();
+        
+        try {
+            Random random = new Random();            
+            this.memoria = new Memoria();
+            this.memoria.setRandomValues();
+
+            Thread pc1 = new Thread(this.memoria.caches[0]);
+            Thread pc2 = new Thread(this.memoria.caches[1]);
+            Thread pc3 = new Thread(this.memoria.caches[2]);
+
+            pc1.setName("PC1");
+            pc2.setName("PC2");
+            pc3.setName("PC3");
+
+            pc1.start();
+            pc2.start();
+            pc3.start();          
+
+            this.atualizarTabela(this.memoria);
+        }
+        catch(Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+    
+    public void atualizarTabela(Memoria mp) {
+        
+        // MEMORIA PRINCIPAL
+        
+        DefaultTableModel modelo = new DefaultTableModel(){
+            @Override
+            public boolean isCellEditable(int row, int column) {
+               //all cells false
+               return false;
+            }
+        };
+        modelo.addColumn("Endereço");
+        modelo.addColumn("Valor");
+        
+        ArrayList<String[]> resultados = mp.getValues();
+        for (String[] linha : resultados) {
+            modelo.addRow(linha);
+        }        
+        tableMP.setModel(modelo); 
+        
+        // CACHES //
+        
+        JTable tabelas[] = {cache0, cache1, cache2};
+        
+        int i = 0;
+        for(JTable obj : tabelas) {
+            modelo = new DefaultTableModel(){
+                @Override
+                public boolean isCellEditable(int row, int column) {
+                   //all cells false
+                   return false;
+                }
+            };
+            modelo.addColumn("Endereço");
+            modelo.addColumn("Tag");
+            modelo.addColumn("Valor");
+
+            resultados = mp.caches[i].getValues();
+            for (String[] linha : resultados) {
+                modelo.addRow(linha);
+            }        
+            obj.setModel(modelo);
+            i++;
+        } 
+        
+        
     }
     
     public void setProgram(Program program) {
@@ -34,16 +111,34 @@ public class MainScreen extends javax.swing.JFrame {
         jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        tableMP = new javax.swing.JTable();
+        cache0 = new javax.swing.JTable();
         jScrollPane2 = new javax.swing.JScrollPane();
-        tableMP1 = new javax.swing.JTable();
+        tableMP = new javax.swing.JTable();
         jScrollPane3 = new javax.swing.JScrollPane();
-        tableMP2 = new javax.swing.JTable();
+        cache1 = new javax.swing.JTable();
         jScrollPane4 = new javax.swing.JScrollPane();
-        tableMP3 = new javax.swing.JTable();
+        cache2 = new javax.swing.JTable();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
+        writeCache2Ind0 = new javax.swing.JButton();
+        writeCache2Ind1 = new javax.swing.JButton();
+        writeCache2Ind2 = new javax.swing.JButton();
+        readCache2Ind0 = new javax.swing.JButton();
+        readCache2Ind1 = new javax.swing.JButton();
+        readCache2Ind2 = new javax.swing.JButton();
+        readCache1Ind0 = new javax.swing.JButton();
+        readCache1Ind1 = new javax.swing.JButton();
+        readCache1Ind2 = new javax.swing.JButton();
+        writeCache1Ind0 = new javax.swing.JButton();
+        writeCache1Ind1 = new javax.swing.JButton();
+        writeCache1Ind2 = new javax.swing.JButton();
+        readCache0Ind0 = new javax.swing.JButton();
+        readCache0Ind1 = new javax.swing.JButton();
+        readCache0Ind2 = new javax.swing.JButton();
+        writeCache0Ind2 = new javax.swing.JButton();
+        writeCache0Ind1 = new javax.swing.JButton();
+        writeCache0Ind0 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -53,7 +148,7 @@ public class MainScreen extends javax.swing.JFrame {
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel1.setText("Memória Principal");
 
-        tableMP.setModel(new javax.swing.table.DefaultTableModel(
+        cache0.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {"0", "S", null},
                 {"1", "S", null},
@@ -63,9 +158,9 @@ public class MainScreen extends javax.swing.JFrame {
                 "Endereço", "Tag", "Valor"
             }
         ));
-        jScrollPane1.setViewportView(tableMP);
+        jScrollPane1.setViewportView(cache0);
 
-        tableMP1.setModel(new javax.swing.table.DefaultTableModel(
+        tableMP.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {"0", null},
                 {"1", null},
@@ -75,21 +170,9 @@ public class MainScreen extends javax.swing.JFrame {
                 "Endereço", "Valor"
             }
         ));
-        jScrollPane2.setViewportView(tableMP1);
+        jScrollPane2.setViewportView(tableMP);
 
-        tableMP2.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {"0", "S", null},
-                {"1", "S", null},
-                {"2", "S", null}
-            },
-            new String [] {
-                "Endereço", "", "Valor"
-            }
-        ));
-        jScrollPane3.setViewportView(tableMP2);
-
-        tableMP3.setModel(new javax.swing.table.DefaultTableModel(
+        cache1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {"0", "S", null},
                 {"1", "S", null},
@@ -99,7 +182,19 @@ public class MainScreen extends javax.swing.JFrame {
                 "Endereço", "Tag", "Valor"
             }
         ));
-        jScrollPane4.setViewportView(tableMP3);
+        jScrollPane3.setViewportView(cache1);
+
+        cache2.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {"0", "S", null},
+                {"1", "S", null},
+                {"2", "S", null}
+            },
+            new String [] {
+                "Endereço", "Tag", "Valor"
+            }
+        ));
+        jScrollPane4.setViewportView(cache2);
 
         jLabel2.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         jLabel2.setText("Cache 0");
@@ -110,14 +205,136 @@ public class MainScreen extends javax.swing.JFrame {
         jLabel4.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         jLabel4.setText("Cache 2");
 
+        writeCache2Ind0.setText("write 0");
+        writeCache2Ind0.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                writeCache2Ind0ActionPerformed(evt);
+            }
+        });
+
+        writeCache2Ind1.setText("write 1");
+        writeCache2Ind1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                writeCache2Ind1ActionPerformed(evt);
+            }
+        });
+
+        writeCache2Ind2.setText("write 2");
+        writeCache2Ind2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                writeCache2Ind2ActionPerformed(evt);
+            }
+        });
+
+        readCache2Ind0.setText("read 0");
+        readCache2Ind0.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                readCache2Ind0ActionPerformed(evt);
+            }
+        });
+
+        readCache2Ind1.setText("read 1");
+        readCache2Ind1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                readCache2Ind1ActionPerformed(evt);
+            }
+        });
+
+        readCache2Ind2.setText("read 2");
+        readCache2Ind2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                readCache2Ind2ActionPerformed(evt);
+            }
+        });
+
+        readCache1Ind0.setText("read 0");
+        readCache1Ind0.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                readCache1Ind0ActionPerformed(evt);
+            }
+        });
+
+        readCache1Ind1.setText("read 1");
+        readCache1Ind1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                readCache1Ind1ActionPerformed(evt);
+            }
+        });
+
+        readCache1Ind2.setText("read 2");
+        readCache1Ind2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                readCache1Ind2ActionPerformed(evt);
+            }
+        });
+
+        writeCache1Ind0.setText("write 0");
+        writeCache1Ind0.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                writeCache1Ind0ActionPerformed(evt);
+            }
+        });
+
+        writeCache1Ind1.setText("write 1");
+        writeCache1Ind1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                writeCache1Ind1ActionPerformed(evt);
+            }
+        });
+
+        writeCache1Ind2.setText("write 2");
+        writeCache1Ind2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                writeCache1Ind2ActionPerformed(evt);
+            }
+        });
+
+        readCache0Ind0.setText("read 0");
+        readCache0Ind0.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                readCache0Ind0ActionPerformed(evt);
+            }
+        });
+
+        readCache0Ind1.setText("read 1");
+        readCache0Ind1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                readCache0Ind1ActionPerformed(evt);
+            }
+        });
+
+        readCache0Ind2.setText("read 2");
+        readCache0Ind2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                readCache0Ind2ActionPerformed(evt);
+            }
+        });
+
+        writeCache0Ind2.setText("write 2");
+        writeCache0Ind2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                writeCache0Ind2ActionPerformed(evt);
+            }
+        });
+
+        writeCache0Ind1.setText("write 1");
+        writeCache0Ind1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                writeCache0Ind1ActionPerformed(evt);
+            }
+        });
+
+        writeCache0Ind0.setText("write 0");
+        writeCache0Ind0.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                writeCache0Ind0ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addContainerGap(134, Short.MAX_VALUE)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 400, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(141, 141, 141))
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -125,36 +342,107 @@ public class MainScreen extends javax.swing.JFrame {
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                             .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 200, Short.MAX_VALUE)
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
-                        .addGap(18, 18, 18)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                            .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, 200, Short.MAX_VALUE))
-                        .addGap(18, 18, 18)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(writeCache0Ind0, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(writeCache0Ind1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(writeCache0Ind2, javax.swing.GroupLayout.DEFAULT_SIZE, 91, Short.MAX_VALUE))
+                                .addGap(18, 18, 18)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(readCache0Ind2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(readCache0Ind1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(readCache0Ind0, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                        .addGap(36, 36, 36)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(writeCache1Ind1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(writeCache1Ind0, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(writeCache1Ind2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(18, 18, 18)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(readCache1Ind1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(readCache1Ind0, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(readCache1Ind2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                            .addComponent(jScrollPane3, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                            .addComponent(jLabel3, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 200, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 36, Short.MAX_VALUE)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 200, Short.MAX_VALUE)
-                            .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addGap(0, 0, Short.MAX_VALUE)))
-                .addContainerGap())
+                            .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(writeCache2Ind2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(writeCache2Ind1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(writeCache2Ind0, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(readCache2Ind0, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(readCache2Ind1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(readCache2Ind2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))))
+                .addGap(18, 18, 18))
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(154, 154, 154)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 400, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
+
+        jPanel1Layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {readCache2Ind0, readCache2Ind1, writeCache2Ind0, writeCache2Ind1, writeCache2Ind2});
+
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap()
                 .addComponent(jLabel1)
                 .addGap(18, 18, 18)
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(35, 35, 35)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, 27, Short.MAX_VALUE)
+                    .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(10, 10, 10)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap())
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(writeCache2Ind0, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(readCache2Ind0))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(writeCache2Ind1)
+                            .addComponent(readCache2Ind1))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(writeCache2Ind2)
+                            .addComponent(readCache2Ind2)))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(readCache1Ind0)
+                            .addComponent(writeCache1Ind0, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(readCache0Ind0)
+                            .addComponent(writeCache0Ind0))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(readCache1Ind1)
+                            .addComponent(writeCache1Ind1)
+                            .addComponent(readCache0Ind1))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(readCache1Ind2)
+                            .addComponent(writeCache1Ind2)
+                            .addComponent(readCache0Ind2)))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(29, 29, 29)
+                        .addComponent(writeCache0Ind1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(writeCache0Ind2)))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -171,6 +459,90 @@ public class MainScreen extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void writeCache2Ind0ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_writeCache2Ind0ActionPerformed
+        write(2, 0);
+    }//GEN-LAST:event_writeCache2Ind0ActionPerformed
+
+    private void writeCache2Ind1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_writeCache2Ind1ActionPerformed
+        write(2, 1);
+    }//GEN-LAST:event_writeCache2Ind1ActionPerformed
+
+    private void writeCache2Ind2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_writeCache2Ind2ActionPerformed
+        write(2, 2);
+    }//GEN-LAST:event_writeCache2Ind2ActionPerformed
+
+    private void readCache2Ind0ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_readCache2Ind0ActionPerformed
+        read(2, 0);
+    }//GEN-LAST:event_readCache2Ind0ActionPerformed
+
+    private void readCache2Ind1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_readCache2Ind1ActionPerformed
+        read(2, 1);
+    }//GEN-LAST:event_readCache2Ind1ActionPerformed
+
+    private void readCache2Ind2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_readCache2Ind2ActionPerformed
+        read(2, 2);
+    }//GEN-LAST:event_readCache2Ind2ActionPerformed
+
+    private void readCache1Ind2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_readCache1Ind2ActionPerformed
+        write(1, 2);
+    }//GEN-LAST:event_readCache1Ind2ActionPerformed
+
+    private void writeCache1Ind0ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_writeCache1Ind0ActionPerformed
+        write(1, 0);
+    }//GEN-LAST:event_writeCache1Ind0ActionPerformed
+
+    private void writeCache1Ind1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_writeCache1Ind1ActionPerformed
+        write(1, 1);
+    }//GEN-LAST:event_writeCache1Ind1ActionPerformed
+
+    private void writeCache1Ind2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_writeCache1Ind2ActionPerformed
+        read(1, 2);
+    }//GEN-LAST:event_writeCache1Ind2ActionPerformed
+
+    private void readCache1Ind1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_readCache1Ind1ActionPerformed
+        read(1, 1);
+    }//GEN-LAST:event_readCache1Ind1ActionPerformed
+
+    private void readCache1Ind0ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_readCache1Ind0ActionPerformed
+        read(1, 0);
+    }//GEN-LAST:event_readCache1Ind0ActionPerformed
+
+    private void writeCache0Ind0ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_writeCache0Ind0ActionPerformed
+        write(0, 0);
+    }//GEN-LAST:event_writeCache0Ind0ActionPerformed
+
+    private void writeCache0Ind1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_writeCache0Ind1ActionPerformed
+        write(0, 1);
+    }//GEN-LAST:event_writeCache0Ind1ActionPerformed
+
+    private void writeCache0Ind2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_writeCache0Ind2ActionPerformed
+        write(0, 2);
+    }//GEN-LAST:event_writeCache0Ind2ActionPerformed
+
+    private void readCache0Ind0ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_readCache0Ind0ActionPerformed
+        read(0, 0);
+    }//GEN-LAST:event_readCache0Ind0ActionPerformed
+
+    private void readCache0Ind1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_readCache0Ind1ActionPerformed
+        read(0, 1);
+    }//GEN-LAST:event_readCache0Ind1ActionPerformed
+
+    private void readCache0Ind2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_readCache0Ind2ActionPerformed
+        read(0, 2);
+    }//GEN-LAST:event_readCache0Ind2ActionPerformed
+
+    public void write(int cache, int ind) {
+        Random random = new Random();
+        int valor = random.nextInt(20) + 1;
+        this.memoria.caches[cache].writeValue(valor, ind);
+        this.atualizarTabela(this.memoria);
+    }
+    
+    public void read(int cache, int ind) {
+        this.memoria.caches[cache].readValue(ind);
+        this.atualizarTabela(this.memoria);
+    }
+    
     /**
      * @param args the command line arguments
      */
@@ -207,6 +579,9 @@ public class MainScreen extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JTable cache0;
+    private javax.swing.JTable cache1;
+    private javax.swing.JTable cache2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -216,9 +591,24 @@ public class MainScreen extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
+    private javax.swing.JButton readCache0Ind0;
+    private javax.swing.JButton readCache0Ind1;
+    private javax.swing.JButton readCache0Ind2;
+    private javax.swing.JButton readCache1Ind0;
+    private javax.swing.JButton readCache1Ind1;
+    private javax.swing.JButton readCache1Ind2;
+    private javax.swing.JButton readCache2Ind0;
+    private javax.swing.JButton readCache2Ind1;
+    private javax.swing.JButton readCache2Ind2;
     private javax.swing.JTable tableMP;
-    private javax.swing.JTable tableMP1;
-    private javax.swing.JTable tableMP2;
-    private javax.swing.JTable tableMP3;
+    private javax.swing.JButton writeCache0Ind0;
+    private javax.swing.JButton writeCache0Ind1;
+    private javax.swing.JButton writeCache0Ind2;
+    private javax.swing.JButton writeCache1Ind0;
+    private javax.swing.JButton writeCache1Ind1;
+    private javax.swing.JButton writeCache1Ind2;
+    private javax.swing.JButton writeCache2Ind0;
+    private javax.swing.JButton writeCache2Ind1;
+    private javax.swing.JButton writeCache2Ind2;
     // End of variables declaration//GEN-END:variables
 }

@@ -5,8 +5,6 @@
  */
 package application;
 
-import java.util.Random;
-import java.util.Scanner;
 import screen.MainScreen;
 
 /**
@@ -19,46 +17,28 @@ public class Program {
      * @param args the command line arguments
      */
     public static void main(String[] args) {        
+        
         try {
-            Random random = new Random();
-            Memoria MP = new Memoria();
-            MP.setRandomValues();
-
-            Thread pc1 = new Thread(MP.caches[0]);
-            Thread pc2 = new Thread(MP.caches[1]);
-            Thread pc3 = new Thread(MP.caches[2]);
-
-            pc1.setName("PC1");
-            pc2.setName("PC2");
-            pc3.setName("PC3");
-
-            pc1.start();
-            pc2.start();
-            pc3.start();       
-
-            MP.printValues();
-            
-            System.out.print("Estado inicial");
-            for(Cache obj : MP.caches) {
-                obj.printValues();
-            }
-            Scanner sc = new Scanner(System.in);
-            for(int i = 0; i < 5; i++) {
-                System.out.print("\nEstágio " + i);
-                int cache = random.nextInt(3);
-                int ind = random.nextInt(3);
-                int valor = random.nextInt(20) + 1;
-                System.out.println("\nCache: " + cache + " - Endereço: " + ind + " - Valor: " + valor);
-                MP.caches[cache].setValue(valor, ind);
-                for(Cache obj : MP.caches) {
-                    obj.printValues();                    
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
                 }
-                sc.next();
             }
+        } catch (ClassNotFoundException ex) {
+            java.util.logging.Logger.getLogger(MainScreen.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (InstantiationException ex) {
+            java.util.logging.Logger.getLogger(MainScreen.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            java.util.logging.Logger.getLogger(MainScreen.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(MainScreen.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
-        catch(Exception ex) {
-            ex.printStackTrace();
-        }
+        
+        MainScreen ms = new MainScreen();
+        ms.setResizable(false);
+        ms.setLocationRelativeTo(null);
+        ms.setVisible(true);
     }
     
 }

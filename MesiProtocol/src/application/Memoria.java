@@ -5,6 +5,7 @@
  */
 package application;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 /**
@@ -42,12 +43,14 @@ public class Memoria {
         }
     }
     
-    public void printValues(){
-        System.out.println("Memória Principal!");
-        for(int obj : this.valores) {
-            System.out.println(obj);
+    public ArrayList<String[]> getValues(){
+        ArrayList<String[]> aux = new ArrayList<>();
+        for(int i = 0; i < this.valores.length; i++) {
+            String[] vet = new String[2];
+            vet[0] = String.valueOf(i);
+            vet[1] = String.valueOf(this.valores[i]);
+            aux.add(vet);
         }
-        System.out.println();
+        return aux;
     }
-    
 }
