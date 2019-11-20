@@ -484,7 +484,7 @@ public class MainScreen extends javax.swing.JFrame {
     }//GEN-LAST:event_readCache2Ind2ActionPerformed
 
     private void readCache1Ind2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_readCache1Ind2ActionPerformed
-        write(1, 2);
+        read(1, 2);
     }//GEN-LAST:event_readCache1Ind2ActionPerformed
 
     private void writeCache1Ind0ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_writeCache1Ind0ActionPerformed
@@ -496,7 +496,7 @@ public class MainScreen extends javax.swing.JFrame {
     }//GEN-LAST:event_writeCache1Ind1ActionPerformed
 
     private void writeCache1Ind2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_writeCache1Ind2ActionPerformed
-        read(1, 2);
+        write(1, 2);
     }//GEN-LAST:event_writeCache1Ind2ActionPerformed
 
     private void readCache1Ind1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_readCache1Ind1ActionPerformed
